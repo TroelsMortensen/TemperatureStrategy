@@ -7,6 +7,5 @@ public interface ThermostatModel {
     void powerDown();
     void attachListener(String evtName, PropertyChangeListener lstnr);
     int getPower();
-
     void addTemperature(Temperature temperature);
 }

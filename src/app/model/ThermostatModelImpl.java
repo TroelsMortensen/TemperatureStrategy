@@ -7,7 +7,6 @@ import java.util.Map;
 
 public class ThermostatModelImpl implements ThermostatModel {
 
-    private final Map<String, Temperature> temps = new HashMap<>();
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
     private int power = 0;
 
@@ -28,16 +27,13 @@ public class ThermostatModelImpl implements ThermostatModel {
         support.addPropertyChangeListener(evtName, lstnr);
     }
 
+    @Override
     public int getPower(){
         return power;
     }
 
     @Override
     public void addTemperature(Temperature temperature) {
-        Temperature prev = temps.get(temperature.getId());
-
-        support.firePropertyChange("NewTemp", prev, temperature);
-
-        temps.put(temperature.getId(), temperature);
+        support.firePropertyChange("NewTemp", null, temperature);
     }
 }
