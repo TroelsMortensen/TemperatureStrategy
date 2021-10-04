@@ -3,7 +3,7 @@ package step2switch.thermometer;
 import app.model.Temperature;
 import app.model.ThermostatModel;
 
-public class ThermometerSwitch implements Runnable {
+public class ThermometerSwitchWithF implements Runnable {
 
     private double temp;
     private final String id;
@@ -18,8 +18,8 @@ public class ThermometerSwitch implements Runnable {
         OUTSIDE_DYNAMIC
     }
 
-    public ThermometerSwitch(String id, int distance, String unit,
-                             ThermostatModel model, Type type) {
+    public ThermometerSwitchWithF(String id, int distance, String unit,
+                                  ThermostatModel model, Type type) {
         this.id = id;
         this.distance = distance;
         this.unit = unit;
@@ -31,13 +31,32 @@ public class ThermometerSwitch implements Runnable {
     public void run() {
         while (true) {
 
-            if (type == Type.OUTSIDE_STATIC) {                          // static outside temp
-                temp = 0;
-            } else if (type == Type.OUTSIDE_DYNAMIC) {                  // dynamic outside
-                temp = externalTemperature(temp, -5, 5);      // min and max temp
-            } else {                                                    // inside temperature
-                temp = updateTemperature(temp, model.getPower(), distance, 0, 4);
+            if (type == Type.OUTSIDE_STATIC) {
+                if (unit.equals("F")) {
+                    temp = 32;
+                } else if(unit.equals("K")) {
+                    temp = 273.15;
+                } else {
+                    temp = 0;
+                }
+            } else if (type == Type.OUTSIDE_DYNAMIC) {
+                if(unit.equals("F")) {
+                    temp = 32 + externalTemperature(temp, -5, 5) * 1.8;
+                } else if(unit.equals("K")) {
+                    temp = externalTemperature(temp, -5, 5) + 273.15;
+                } else {
+                    temp = externalTemperature(temp, -5, 5);
+                }
+            } else {
+                if(unit.equals("F")) {
+                    temp = 32 + updateTemperature(temp, model.getPower(), distance, 0, 4) * 1.8;
+                } else if (unit.equals("K")) {
+                    temp = updateTemperature(temp, model.getPower(), distance, 0, 4) + 273.15;
+                } else {
+                    temp = updateTemperature(temp, model.getPower(), distance, 0, 4);
+                }
             }
+
 
             model.addTemperature(new Temperature(temp, id, unit));
             try {
